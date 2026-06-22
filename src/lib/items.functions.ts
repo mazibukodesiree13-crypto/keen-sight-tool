@@ -54,10 +54,11 @@ export const updateItem = createServerFn({ method: "POST" })
       .parse(d),
   )
   .handler(async ({ data, context }) => {
-    const { id, ...patch } = data;
+    const { id, ...rest } = data;
+    const patch: Record<string, unknown> = { ...rest };
     const { data: row, error } = await context.supabase
       .from("items")
-      .update(patch)
+      .update(patch as never)
       .eq("id", id)
       .eq("user_id", context.userId)
       .select()
