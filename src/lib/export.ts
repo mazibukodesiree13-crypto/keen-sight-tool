@@ -1,5 +1,6 @@
 // Client-only export helpers. Import dynamically to keep SSR safe.
-import { saveAs } from "file-saver";
+import pkg from "file-saver";
+const { saveAs } = pkg;
 
 export async function exportTxt(filename: string, text: string) {
   const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
