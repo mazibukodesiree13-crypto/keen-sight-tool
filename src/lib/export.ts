@@ -1,10 +1,19 @@
-// Client-only export helpers. Import dynamically to keep SSR safe.
-import pkg from "file-saver";
-const { saveAs } = pkg;
+// Client-only export helpers. Keep browser APIs inside functions so SSR/build stays safe.
+
+function downloadBlob(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 0);
+}
 
 export async function exportTxt(filename: string, text: string) {
   const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
-  saveAs(blob, `${filename}.txt`);
+  downloadBlob(blob, `${filename}.txt`);
 }
 
 export async function exportPdf(filename: string, text: string) {
@@ -42,7 +51,7 @@ export async function exportDocx(filename: string, text: string) {
     sections: [{ children: paragraphs }],
   });
   const blob = await Packer.toBlob(doc);
-  saveAs(blob, `${filename}.docx`);
+  downloadBlob(blob, `${filename}.docx`);
 }
 
 export async function copyToClipboard(text: string) {
